@@ -42,32 +42,32 @@ The prediction stage uses the drone's motion model and IMU data to estimate the 
 * **State Prediction:**
     ```math
     \begin{align}
-    \mathbf{\hat{X}}_{k|k-1} &= f(\mathbf{\hat{X}}_{k|k-1}, \mathbf{U}_k) \\
-    &\approx \mathbf{F}_k \mathbf{\hat{X}}_{k-1|k-1} + \mathbf{W}_k \mathbf{U}_k
+        \mathbf{\hat{X}}_{k|k-1} &= f(\mathbf{\hat{X}}_{k|k-1}, \mathbf{U}_k) \\
+        &\approx \mathbf{F}_k \mathbf{\hat{X}}_{k-1|k-1} + \mathbf{W}_k \mathbf{U}_k
     \end{align}
     ```
     Where $\mathbf{\hat{X}}$ is the state vector (position, velocity, yaw, yaw rate), $\mathbf{U}$ is the control input (IMU linear accelerations and angular velocity), $\mathbf{F}$ is the state transition matrix, and $\mathbf{W}$ is the control input matrix. For example, for the $x$-axis, the prediction is:
     ```math
     \begin{align}
-    \begin{bmatrix} x_{k|k-1} \\ \dot{x}_{k|k-1} \end{bmatrix} &=
-    \begin{bmatrix} x_{k-1|k-1} + \dot{x}_{k-1|k-1} \Delta t + \frac{1}{2}(\Delta t)^2 a_{x,k} \\
-    \dot{x}_{k-1|k-1} + a_{x,k}\Delta t
-    \end{bmatrix}
+        \begin{bmatrix} x_{k|k-1} \\ \dot{x}_{k|k-1} \end{bmatrix} &=
+        \begin{bmatrix} x_{k-1|k-1} + \dot{x}_{k-1|k-1} \Delta t + \frac{1}{2}(\Delta t)^2 a_{x,k} \\
+        \dot{x}_{k-1|k-1} + a_{x,k}\Delta t
+        \end{bmatrix}
     \end{align}
     ```
     Here, $a_{x,k}$ is the acceleration in the world frame, derived from IMU measurements and the drone's yaw:
     ```math
     \begin{align}
-    \begin{bmatrix} a_{x,k} \\ a_{y,k} \end{bmatrix} &=
-    \begin{bmatrix} \cos{\psi} & -\sin{\psi} \\ \sin{\psi} & \cos{\psi} \end{bmatrix}
-    \begin{bmatrix} u_{x,k} \\ u_{y,k} \end{bmatrix}
+        \begin{bmatrix} a_{x,k} \\ a_{y,k} \end{bmatrix} &=
+        \begin{bmatrix} \cos{\psi} & -\sin{\psi} \\ \sin{\psi} & \cos{\psi} \end{bmatrix}
+        \begin{bmatrix} u_{x,k} \\ u_{y,k} \end{bmatrix}
     \end{align}
     ```
 
 * **Covariance Prediction:**
     ```math
     \begin{align}
-    \mathbf{P}_{k|k-1} &= \mathbf{F}_k \mathbf{P}_{k-1|k-1} \mathbf{F}_k^\top + \mathbf{W}_k \mathbf{Q}_k \mathbf{W}_k^\top
+        \mathbf{P}_{k|k-1} &= \mathbf{F}_k \mathbf{P}_{k-1|k-1} \mathbf{F}_k^\top + \mathbf{W}_k \mathbf{Q}_k \mathbf{W}_k^\top
     \end{align}
     ```
     Where $\mathbf{P}$ is the covariance matrix representing uncertainty, and $\mathbf{Q}$ is the process noise covariance matrix (e.g., $\mathbf{Q}_x = \begin{bmatrix} \sigma_{imu,x}^2 & 0 \\ 0 & \sigma_{imu,y}^2 \end{bmatrix}$).
@@ -79,26 +79,26 @@ When new sensor measurements become available, the correction stage updates the 
 * **Kalman Gain:**
     ```math
     \begin{align}
-    \mathbf{K}_k &= \mathbf{P}_{k|k-1} \mathbf{H}_k^\top
-    \left(
-    \mathbf{H}_k \mathbf{P}_{k|k-1} \mathbf{H}_k^\top
-    + \mathbf{V}_k \mathbf{R}_k \mathbf{V}_k^\top
-    \right)^{-1}
+        \mathbf{K}_k &= \mathbf{P}_{k|k-1} \mathbf{H}_k^\top
+        \left(
+        \mathbf{H}_k \mathbf{P}_{k|k-1} \mathbf{H}_k^\top
+        + \mathbf{V}_k \mathbf{R}_k \mathbf{V}_k^\top
+        \right)^{-1}
     \end{align}
     ```
 * **State Update:**
     ```math
     \begin{align}
-    \mathbf{\hat{X}}_{k|k} &= \mathbf{\hat{X}}_{k|k-1} + \mathbf{K}_k
-    \left(
-    \mathbf{Y}_k - \mathbf{H}_k \mathbf{\hat{X}}_{k|k-1}
-    \right)
+        \mathbf{\hat{X}}_{k|k} &= \mathbf{\hat{X}}_{k|k-1} + \mathbf{K}_k
+        \left(
+        \mathbf{Y}_k - \mathbf{H}_k \mathbf{\hat{X}}_{k|k-1}
+        \right)
     \end{align}
     ```
 * **Covariance Update:**
     ```math
     \begin{align}
-    \mathbf{P}_{k|k} &= \mathbf{P}_{k|k-1} - \mathbf{K}_k \mathbf{H}_k \mathbf{P}_{k|k-1}
+        \mathbf{P}_{k|k} &= \mathbf{P}_{k|k-1} - \mathbf{K}_k \mathbf{H}_k \mathbf{P}_{k|k-1}
     \end{align}
     ```
     Here, $\mathbf{Y}$ is the measurement, $\mathbf{H}$ is the measurement matrix (Jacobian of the measurement model), $\mathbf{V}$ is the measurement frame transformation, and $\mathbf{R}$ is the measurement noise covariance.
@@ -113,23 +113,23 @@ When new sensor measurements become available, the correction stage updates the 
     **ECEF Conversion:**
     ```math
     \begin{align}
-    e^2 &= 1 - \frac{b^2}{a^2} \\
-    N(\varphi) &= \frac{a}{\sqrt{1 - e^2 \sin^2(\varphi)}} \\
-    \begin{bmatrix} x_e \\ y_e \\ z_e \end{bmatrix} &=
-    \begin{bmatrix}
-    (N(\varphi) + h) \cos(\varphi) \cos(\lambda) \\
-    (N(\varphi) + h) \cos(\varphi) \sin(\lambda) \\
-    \left( \frac{b^2}{a^2} N(\varphi) + h \right) \sin(\varphi)
-    \end{bmatrix}
+        e^2 &= 1 - \frac{b^2}{a^2} \\
+        N(\varphi) &= \frac{a}{\sqrt{1 - e^2 \sin^2(\varphi)}} \\
+        \begin{bmatrix} x_e \\ y_e \\ z_e \end{bmatrix} &=
+        \begin{bmatrix}
+        (N(\varphi) + h) \cos(\varphi) \cos(\lambda) \\
+        (N(\varphi) + h) \cos(\varphi) \sin(\lambda) \\
+        \left( \frac{b^2}{a^2} N(\varphi) + h \right) \sin(\varphi)
+        \end{bmatrix}
     \end{align}
     ```
     **NED to World Frame Transformation:**
     ```math
     \begin{align}
-    \mathbf{R}_{m/n} &= \begin{bmatrix} 0 & 1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & -1 \end{bmatrix} \\
-    \begin{bmatrix} x_{gps} \\ y_{gps} \\ z_{gps} \end{bmatrix} &= \mathbf{R}_{m/n}
-    \begin{bmatrix} x_n \\ y_n \\ z_n \end{bmatrix} +
-    \begin{bmatrix} x_0 \\ y_0 \\ z_0 \end{bmatrix}
+        \mathbf{R}_{m/n} &= \begin{bmatrix} 0 & 1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & -1 \end{bmatrix} \\
+        \begin{bmatrix} x_{gps} \\ y_{gps} \\ z_{gps} \end{bmatrix} &= \mathbf{R}_{m/n}
+        \begin{bmatrix} x_n \\ y_n \\ z_n \end{bmatrix} +
+        \begin{bmatrix} x_0 \\ y_0 \\ z_0 \end{bmatrix}
     \end{align}
     ```
     The Jacobian $\mathbf{H}$ for each axis ($x, y, z$) from GPS is $\begin{bmatrix}1 & 0 \end{bmatrix}$, with corresponding variances $\sigma^2_{gps,x}$, $\sigma^2_{gps,y}$, $\sigma^2_{gps,z}$.
