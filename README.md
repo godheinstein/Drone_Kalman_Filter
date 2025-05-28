@@ -40,29 +40,30 @@ The core of the estimation system is a **simplified Kalman Filter**, which fuses
 The prediction stage uses the drone's motion model and IMU data to estimate the next state and its uncertainty. This is governed by the following equations:
 
 * **State Prediction:**
-    $$
-    \begin{align}
-        \mathbf{\hat{X}}_{k|k-1} &= f(\mathbf{\hat{X}}_{k|k-1}, \mathbf{U}_k) \\
-        &\approx \mathbf{F}_k \mathbf{\hat{X}}_{k-1|k-1} + \mathbf{W}_k \mathbf{U}_k
-    \end{align}
-    $$
-    Where $\mathbf{\hat{X}}$ is the state vector (position, velocity, yaw, yaw rate), $\mathbf{U}$ is the control input (IMU linear accelerations and angular velocity), $\mathbf{F}$ is the state transition matrix, and $\mathbf{W}$ is the control input matrix. For example, for the $x$-axis, the prediction is:
-    ```math
-    \begin{align}
-        \begin{bmatrix} x_{k|k-1} \\ \dot{x}_{k|k-1} \end{bmatrix} &=
-        \begin{bmatrix} x_{k-1|k-1} + \dot{x}_{k-1|k-1} \Delta t + \frac{1}{2}(\Delta t)^2 a_{x,k} \\
-        \dot{x}_{k-1|k-1} + a_{x,k}\Delta t
-        \end{bmatrix}
-    \end{align}
-    ```
-    Here, $a_{x,k}$ is the acceleration in the world frame, derived from IMU measurements and the drone's yaw:
-    ```math
-    \begin{align}
-        \begin{bmatrix} a_{x,k} \\ a_{y,k} \end{bmatrix} &=
-        \begin{bmatrix} \cos{\psi} & -\sin{\psi} \\ \sin{\psi} & \cos{\psi} \end{bmatrix}
-        \begin{bmatrix} u_{x,k} \\ u_{y,k} \end{bmatrix}
-    \end{align}
-    ```
+$$
+\begin{align}
+\mathbf{\hat{X}}_{k|k-1} &= f(\mathbf{\hat{X}}_{k|k-1}, \mathbf{U}_k) \\
+&\approx \mathbf{F}_k \mathbf{\hat{X}}_{k-1|k-1} + \mathbf{W}_k \mathbf{U}_k
+\end{align}
+$$
+Where $\mathbf{\hat{X}}$ is the state vector (position, velocity, yaw, yaw rate), $\mathbf{U}$ is the control input (IMU linear accelerations and angular velocity), $\mathbf{F}$ is the state transition matrix, and $\mathbf{W}$ is the control input matrix. For example, for the $x$-axis, the prediction is:
+    
+```math
+\begin{align}
+\begin{bmatrix} x_{k|k-1} \\ \dot{x}_{k|k-1} \end{bmatrix} &=
+\begin{bmatrix} x_{k-1|k-1} + \dot{x}_{k-1|k-1} \Delta t + \frac{1}{2}(\Delta t)^2 a_{x,k} \\
+\dot{x}_{k-1|k-1} + a_{x,k}\Delta t
+\end{bmatrix}
+\end{align}
+```
+Here, $a_{x,k}$ is the acceleration in the world frame, derived from IMU measurements and the drone's yaw:
+```math
+\begin{align}
+    \begin{bmatrix} a_{x,k} \\ a_{y,k} \end{bmatrix} &=
+    \begin{bmatrix} \cos{\psi} & -\sin{\psi} \\ \sin{\psi} & \cos{\psi} \end{bmatrix}
+    \begin{bmatrix} u_{x,k} \\ u_{y,k} \end{bmatrix}
+\end{align}
+```
 
 * **Covariance Prediction:**
     ```math
