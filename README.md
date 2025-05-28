@@ -40,12 +40,12 @@ The core of the estimation system is a **simplified Kalman Filter**, which fuses
 The prediction stage uses the drone's motion model and IMU data to estimate the next state and its uncertainty. This is governed by the following equations:
 
 * **State Prediction:**
-    ```math
+    $$
     \begin{align}
         \mathbf{\hat{X}}_{k|k-1} &= f(\mathbf{\hat{X}}_{k|k-1}, \mathbf{U}_k) \\
         &\approx \mathbf{F}_k \mathbf{\hat{X}}_{k-1|k-1} + \mathbf{W}_k \mathbf{U}_k
     \end{align}
-    ```
+    $$
     Where $\mathbf{\hat{X}}$ is the state vector (position, velocity, yaw, yaw rate), $\mathbf{U}$ is the control input (IMU linear accelerations and angular velocity), $\mathbf{F}$ is the state transition matrix, and $\mathbf{W}$ is the control input matrix. For example, for the $x$-axis, the prediction is:
     ```math
     \begin{align}
